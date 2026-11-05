@@ -1,4 +1,17 @@
-"""Учебный список задач: HTML-форма и JSON API поверх одной SQLite."""
+"""Учебный список задач с HTML-формой и JSON API.
+
+Как Flask обрабатывает запрос:
+
+1. Сервер принимает HTTP-запрос и вызывает объект app через WSGI,
+   стандартный интерфейс между сервером и Python-приложением.
+2. Flask делает данные текущего запроса доступными через request
+   и выбирает обработчик по HTTP-методу и пути.
+3. Обработчик читает данные запроса и возвращает результат.
+   Например, task_list() возвращает HTML из Jinja, а api_task_list()
+   возвращает словарь.
+4. Flask собирает HTTP-ответ. Словарь становится JSON, а пара
+   (словарь, 201) задаёт и тело ответа, и код статуса.
+"""
 
 from pathlib import Path
 
@@ -6,6 +19,8 @@ from flask import Flask, abort, redirect, render_template, request, url_for
 
 from db import get_db, init_app
 
+# Объект app хранит настройки и маршруты. Имя модуля помогает Flask
+# найти папки templates и static.
 app = Flask(__name__)
 app.config["DATABASE"] = Path(app.instance_path) / "tasks.sqlite3"
 init_app(app)
@@ -48,8 +63,11 @@ def index():
     return redirect(url_for("task_list"))
 
 
+# При загрузке модуля декоратор регистрирует task_list как обработчик GET /tasks.
 @app.get("/tasks")
 def task_list():
+    # Flask передаёт задачи из SQLite в шаблон Jinja templates/tasks.html.
+    # В шаблоне список доступен как переменная tasks. Результат — HTML.
     return render_template(
         "tasks.html", tasks=read_tasks(), max_title_length=MAX_TITLE_LENGTH
     )
@@ -60,6 +78,7 @@ def task_create():
     title = request.form.get("title", "")
     error = title_error(title)
     if error:
+        # Снова рендерим шаблон Jinja, сохраняя введённый текст и показывая ошибку.
         return render_template(
             "tasks.html",
             tasks=read_tasks(),
