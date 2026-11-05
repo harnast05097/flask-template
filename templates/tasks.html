@@ -1,0 +1,50 @@
+<!doctype html>
+<html lang="ru">
+  <head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>Список задач</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
+  </head>
+  <body>
+    <main>
+      <h1>Список задач</h1>
+
+      <form method="post" action="{{ url_for('task_create') }}" class="add-task">
+        <label for="title">Новая задача</label>
+        <div class="form-row">
+          <input
+            id="title"
+            name="title"
+            value="{{ title | default('') }}"
+            maxlength="{{ max_title_length }}"
+            placeholder="Разобраться с HTTP"
+            {% if error %}aria-invalid="true" aria-describedby="error"{% endif %}
+            required
+          >
+          <button type="submit">Добавить</button>
+        </div>
+        {% if error %}
+          <p id="error" class="error" role="alert">{{ error }}</p>
+        {% endif %}
+      </form>
+
+      <ul class="tasks">
+        {% for task in tasks %}
+          <li>
+            <span class="{% if task.done %}done{% endif %}">{{ task.title }}</span>
+            <form method="post" action="{{ url_for('task_toggle', task_id=task.id) }}">
+              <button type="submit" class="secondary">
+                {% if task.done %}Вернуть в работу{% else %}Готово{% endif %}
+              </button>
+            </form>
+          </li>
+        {% else %}
+          <li class="empty">Пока нет задач. Добавьте первую.</li>
+        {% endfor %}
+      </ul>
+
+      <p class="api-link"><a href="{{ url_for('api_task_list') }}">Посмотреть задачи в JSON</a></p>
+    </main>
+  </body>
+</html>

@@ -1,0 +1,42 @@
+### HTML-страница
+GET http://127.0.0.1:5000/tasks
+
+### Отправка формы: ответ 303 с Location: /tasks
+POST http://127.0.0.1:5000/tasks
+Content-Type: application/x-www-form-urlencoded
+
+title=Read+HTTP
+
+### Все задачи в JSON
+GET http://127.0.0.1:5000/api/tasks
+Accept: application/json
+
+### Query-параметр: только невыполненные
+GET http://127.0.0.1:5000/api/tasks?done=0
+
+### Создание через JSON: ответ 201
+POST http://127.0.0.1:5000/api/tasks
+Content-Type: application/json
+
+{"title": "Написать HTTP-клиент"}
+
+### Серверная валидация: ответ 400
+POST http://127.0.0.1:5000/api/tasks
+Content-Type: application/json
+
+{"title": "   "}
+
+### Неподходящий Content-Type: ответ 415
+POST http://127.0.0.1:5000/api/tasks
+Content-Type: application/x-www-form-urlencoded
+
+title=Read
+
+### Изменение задачи через форму. При необходимости замените 1 на существующий id
+POST http://127.0.0.1:5000/tasks/1/toggle
+
+### Неверный метод: ответ 405
+GET http://127.0.0.1:5000/tasks/1/toggle
+
+### Несуществующий маршрут: ответ 404
+GET http://127.0.0.1:5000/missing
