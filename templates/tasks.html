@@ -30,6 +30,12 @@
         {% endif %}
       </form>
 
+      <div class="filters">
+        <a href="{{ url_for('task_list', status='all') }}" class="{% if current_status == 'all' %}active{% endif %}">Все</a> |
+        <a href="{{ url_for('task_list', status='active') }}" class="{% if current_status == 'active' %}active{% endif %}">В работе</a> |
+        <a href="{{ url_for('task_list', status='completed') }}" class="{% if current_status == 'completed' %}active{% endif %}">Выполнены</a>
+      </div>
+
       <ul class="tasks">
         {% for task in tasks %}
           <li>
